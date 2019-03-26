@@ -1,0 +1,25 @@
+{
+    "name": "mpphp/support",
+    "description": "MPPHP support functions.",
+    "keywords": ["php", "helpers", "functions", "mpphp"],
+    "type": "library",
+    "license": "MIT",
+    "homepage": "https://mpphp.github.io/mpphp/",
+    "authors": [
+        {
+            "name": "Anitche Chisom",
+            "email": "anitchec.dev@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "files": [
+            "functions/array.php",
+            "functions/string.php",
+            "functions/utils.php"
+        ]
+    },
+    "require": {
+        "php": "^7.1"
+    }
+}
