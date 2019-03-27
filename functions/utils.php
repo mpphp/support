@@ -12,7 +12,7 @@ function _asset(string $asset):string
 {
     global $app;
 
-    return $app['configs']['app']['url'] .'/public' . $asset;
+    return $app['configs']['app']['url'] .'/web' . $asset;
 }
 
 /**
