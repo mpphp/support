@@ -49,7 +49,7 @@ function _redirect_else($condition, $to = '/')
 function _request_action(array $route, $default = 'index')
 {
     foreach ($route as $method => $action) {
-        if ($_SERVER['REQUEST_METHOD'] == $method) {
+        if ($_SERVER['REQUEST_METHOD'] == strtoupper($method)) {
             return $action;
         }
     }
