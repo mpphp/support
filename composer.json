@@ -16,6 +16,7 @@
         "files": [
             "functions/array.php",
             "functions/core.php",
+            "functions/session.php",
             "functions/string.php",
             "functions/utils.php"
         ]
