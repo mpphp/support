@@ -1,7 +1,11 @@
 <?php
 
 /**
- * This function will return false on new sessions or when a session is loaded by a host with a different IP address or browser. _prevent_hijacking will true if the session is valid and false otherwise. This means it will return false not just on malicious attempts but completely new sessions as well.
+ * This function will return false on new sessions or when a session 
+ * is loaded by a host with a different IP address or browser. 
+ * _prevent_hijacking will true if the session is valid and false otherwise. 
+ * This means it will return false not just on malicious attempts 
+ * but completely new sessions as well.
  *
  * @return bool
  */
@@ -51,7 +55,7 @@ function _regenerate_session()
 }
 
 /**
- * Undocumented function
+ * This function to check for the obsolete flag and to see if the session has expired.
  *
  * @return bool
  */
@@ -67,17 +71,24 @@ function _validate_session():bool
 }
 
 /**
- * The default session setup is not at all secure by itself, so we’re going to create a wrapper to add the security we need.
+ * The default session setup is not at all secure by itself, 
+ * so we’re going to create a wrapper to add the security we need.
  *
  * @param string $name
- * @param integer $limit
- * @param string $path
- * @param mixed $domain
- * @param mixed $secure
+ * @param integer $lifetime <p>Lifetime of the session cookie, defined in seconds. 
+ * </p>
+ * @param string $path <p> Path on the domain where the cookie will work. 
+ * Use a single slash ('/') for all paths on the domain. </p>
+ * @param mixed $domain <p> Cookie domain, for example 'www.php.net'. 
+ * To make cookies visible on all subdomains then the domain must 
+ * be prefixed with a dot like '.php.net'. </p>
+ * @param mixed $secure <p> If TRUE cookie will only be sent over secure connections. 
+ * @param bool $http_only
+ * </p>
  * 
  * @return void
  */
-function _session_start($name, $limit = 0, $path = '/', $domain = null, $secure = null)
+function _session_start($name, $lifetime = 0, $path = '/', $domain = null, $secure = null, $http_only = true)
 {
 	// Set the cookie name
 	session_name($name . '_Session');
@@ -85,8 +96,10 @@ function _session_start($name, $limit = 0, $path = '/', $domain = null, $secure 
 	// Set SSL level
 	$https = isset($secure) ? $secure : isset($_SERVER['HTTPS']);
 
-	// Set session cookie options
-	session_set_cookie_params($limit, $path, $domain, $https, true);
+    // Set session cookie options
+    // More on session_set_cookie_params visit - https://www.php.net/manual/en/function.session-set-cookie-params.php
+    session_set_cookie_params(time()+$lifetime, $path, $domain, $https, $http_only);
+    
 	session_start();
 
 	// Make sure the session hasn't expired, and destroy it if it has

@@ -16,14 +16,116 @@ function _asset(string $asset):string
 }
 
 /**
+ * Return the authenticated user from the session.
+ *
+ * @return array|null
+ */
+function _auth_user()
+{
+    /*
+     * Simple logic to make sure we have a user logged in the session.
+     * If user does not exist or its empty, return null
+     *
+     * @reference For more on array_key_exists() visit: http://php.net/manual/en/function.array-key-exists.php
+     * */
+    $user = _auth_check() ? $_SESSION['authenticated']['user'] : null;
+
+    // return user
+    return  $user;
+}
+
+/**
+ * Undocumented function
+ *
+ * @return bool
+ */
+function _auth_check()
+{
+    return ($_SESSION && array_key_exists('authenticated', $_SESSION)) 
+    && (array_key_exists('user', $_SESSION['authenticated']) && ! empty($_SESSION['authenticated']['user']));
+}
+
+/**
+ * Undocumented function
+ *
+ * @param string $key
+ * @return array|null
+ */
+function _get_flash(string $key)
+{
+    return ($_SESSION && array_key_exists('flash', $_SESSION) && is_array($_SESSION['flash'])) 
+        && (array_key_exists($key, $_SESSION['flash']) && ! empty($_SESSION['flash'][$key])) 
+        ? $_SESSION['flash'][$key] : null;
+}
+
+/**
+ * Undocumented function
+ *
+ * @param array $data
+ * @return void
+ */
+function _set_flash(array $data)
+{
+    $_SESSION['flash'] = $data;
+}
+
+/**
  * Redirect to the specified location.
  *
  * @param string $to
  */
-function _redirect($to = '/')
+function _redirect($to = '/', array $with = [])
 {
+    if (! empty($with)) {
+        _set_flash($with);
+    }
+
     header('Location: ' . $to);
     exit;
+}
+
+/**
+ * Redirect back to the previous location.
+ */
+function _redirect_back(array $with = [])
+{
+    if (! empty($with)) {
+        _set_flash($with);
+    }
+    
+    header('Location: ' . $_SERVER['HTTP_REFERER']);
+    exit;
+}
+
+/**
+ * Redirect if the given condition is false
+ *
+ * @param bool $condition
+ */
+function _redirect_back_else($condition, array $with = [])
+{
+    if (! $condition) {
+        if (! empty($with)) {
+            _set_flash($with);
+        }
+        
+        _redirect_back();
+    }
+}
+
+/**
+ * Redirect back if the given condition is true
+ *
+ * @param bool $condition
+ */
+function _redirect_back_if($condition, array $with = [])
+{
+    if ($condition) {
+        if (! empty($with)) {
+            _set_flash($with);
+        }
+        _redirect_back();
+    }
 }
 
 /**
@@ -32,9 +134,30 @@ function _redirect($to = '/')
  * @param $condition
  * @param string $to
  */
-function _redirect_else($condition, $to = '/')
+function _redirect_else($condition, $to = '/', array $with = [])
 {
     if (! $condition) {
+        if (! empty($with)) {
+            _set_flash($with);
+        }
+        
+        _redirect($to);
+    }
+}
+
+/**
+ * Redirect if the condition is true.
+ *
+ * @param $condition
+ * @param string $to
+ */
+function _redirect_if($condition, $to = '/', array $with = [])
+{
+    if ($condition) {
+        if (! empty($with)) {
+            _set_flash($with);
+        }
+
         _redirect($to);
     }
 }
@@ -101,11 +224,65 @@ function _blank($value)
  * @param bool $exit
  * @return null|void
  */
-function _pretty_dump($var, $exit = false)
+function _dump($var, $exit = false)
 {
     print '<pre>';
     var_dump($var);
     print '</pre>';
     
     return $exit ? exit : null;
+}
+
+function _errors(string $key = null) {
+
+    $errors = 
+        (array_key_exists('flash', $_SESSION) && ! _blank($_SESSION['flash']))
+        && (array_key_exists('errors', $_SESSION['flash']) 
+        && ! empty($_SESSION['flash']['errors']))
+        ? $_SESSION['flash']['errors'] : [];
+
+    if (! _blank($key)) {
+        if (! _blank($key) && array_key_exists($key, $errors)) {
+            return $errors[$key];
+        }
+
+        return null;
+    }
+
+    return $errors;
+}
+
+function _old($value)
+{
+    $old_value = (array_key_exists('flash', $_SESSION) && ! _blank($_SESSION['flash']))
+        && (array_key_exists('old', $_SESSION['flash']) 
+        && ! empty($_SESSION['flash']['old']))
+        ? $_SESSION['flash']['old'] : null;
+
+    $value = ! _blank($old_value) && array_key_exists($value, $old_value) 
+        ? $old_value[$value] : null;
+
+    return htmlentities($value);
+}
+
+/**
+ * Check a request method and redirect if it does not match the method given.
+ *
+ * @param string $method <p>
+ * The method to be checked for a match.
+ * This should be a "POST" or a "GET" value.
+ * </p>
+ */
+function _check_request_method(string $method) {
+    // If $_SERVER['REQUEST_METHOD'] does not matches the method option.
+    if ($_SERVER['REQUEST_METHOD'] != strtoupper($method)) {
+
+        // Set an error message.
+        _set_flash(['errors' => [
+            'Request method not allowed.']
+            ]);
+
+        // Redirect back.
+        _redirect_back();
+    }
 }
