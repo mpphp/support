@@ -59,6 +59,36 @@ function _get_flash(string $key)
 }
 
 /**
+ * Make a nested path , creating directories down the path
+ * Recursively.
+ *
+ * @param string $path
+ * @return bool
+ */
+function make_path(string $path)
+{
+	$dir = pathinfo($path , PATHINFO_DIRNAME);
+	
+	if( is_dir($dir) )
+	{
+		return true;
+	}
+	else
+	{
+		if( make_path($dir) )
+		{
+			if( mkdir($dir) )
+			{
+				chmod($dir , 0777);
+				return true;
+			}
+		}
+	}
+	
+	return false;
+}
+
+/**
  * Undocumented function
  *
  * @param array $data
