@@ -75,7 +75,7 @@ function _make_path(string $path)
 	}
 	else
 	{
-		if( make_path($dir) )
+		if( _make_path($dir) )
 		{
 			if( mkdir($dir) )
 			{
