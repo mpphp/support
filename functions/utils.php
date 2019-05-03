@@ -65,7 +65,7 @@ function _get_flash(string $key)
  * @param string $path
  * @return bool
  */
-function make_path(string $path)
+function _make_path(string $path)
 {
 	$dir = pathinfo($path , PATHINFO_DIRNAME);
 	
