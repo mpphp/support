@@ -287,10 +287,10 @@ function _old($value)
     $old_value = (array_key_exists('flash', $_SESSION) && ! _blank($_SESSION['flash']))
         && (array_key_exists('old', $_SESSION['flash']) 
         && ! empty($_SESSION['flash']['old']))
-        ? $_SESSION['flash']['old'] : null;
+        ? $_SESSION['flash']['old'] : "";
 
     $value = ! _blank($old_value) && array_key_exists($value, $old_value) 
-        ? $old_value[$value] : null;
+        ? $old_value[$value] : "";
 
     return htmlentities($value);
 }

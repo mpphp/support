@@ -677,7 +677,7 @@ function _sort_recursive($array)
  */
 function _query($array)
 {
-    return http_build_query($array, null, '&', PHP_QUERY_RFC3986);
+    return http_build_query($array, "", '&', PHP_QUERY_RFC3986);
 }
 
 /**
